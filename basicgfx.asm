@@ -142,6 +142,21 @@ bkgd:
 	cpy #$14
 	bne bkgdouter
 
+; Load the floor of the house.
+
+	ldx #0
+	lda $2002
+	lda #$22
+	sta $2006
+	lda #$89
+	sta $2006
+bkgd_floor:
+	lda #$01
+	sta $2007
+	inx
+	cpx #$0D
+	bne bkgd_floor
+
 
 bkgd_words:
 	lda #$20
