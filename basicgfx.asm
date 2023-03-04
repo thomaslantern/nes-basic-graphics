@@ -105,27 +105,16 @@ spriteload:
 	lda $2002
 	lda #$20
 	sta $2006
-	lda #$83
+	sta $09		; zero page - storing high byte here
+	lda #$09
 	sta $2006
-	sta $08
+	sta $08		; zero page - storing low byte here
 
 bkgdouter:
-	lda $2002
-	lda #$20
-	sta $2006
 
-	iny
-	clc
-	lda $08
-	adc #32
-	sta $08	
 
-	sta $2006
-
-	lda #$00
-	sta $2005
-	sta $2005
-
+	
+	
 	ldx #0
 bkgd:
 	; 14 tiles, place them 20 times
@@ -136,28 +125,85 @@ bkgd:
 	cpx #$0E
 	bne bkgd
 
+	lda $2002
+	iny
+	clc
+	lda $08
+	adc #32
+	sta $08	
+	lda $09
+	adc #0	; if carry is set, should add to $09
+	sta $09	
+
+	sta $2006
+	lda $08
+	sta $2006
+
 	cpy #$14
 	bne bkgdouter
 
-;	ldx #0
-;bkgd_words:
+
+bkgd_words:
+	lda #$20
+	sta $09
+	lda #$2C
+	sta $08
+
+	lda $2002
+	lda $09
+	sta $2006
+	lda $08
+	sta $2006
+
+	ldx #0
+happy:
+	
+	lda backgrounddata_words,x
+	sta $2007
+	inx
+	cpx #$05
+	bne happy
+
+	clc
+	lda $08
+	adc #32
+	sta $08
+	lda $2002
+	lda $09
+	sta $2006
+	lda $08
+	sta $2006
+birthday:
+	; do not reset x, keep going
+	
+	lda backgrounddata_words,x
+	sta $2007
+	inx
+	cpx #$0D
+	bne birthday
+
+	clc
+	lda $08
+	adc #32
+	sta $08
+	lda $2002
+	lda $09
+	sta $2006
+	lda $08
+	sta $2006
 
 
-;happy:
-;	lda backgrounddata_words,x
-;	sta $2007
-;	inx
-;	cpx #$00
-;	bne bkgd_words
-
-;birthday:
-
-
-
-;tommy:
+tommy:
+	; do not reset x, keep going
+	
+	lda backgrounddata_words,x
+	sta $2007
+	inx
+	cpx #$15
+	bne tommy
 
 
-
+	lda $2002
 	lda #$00
 	sta $2005
 	sta $2005
@@ -190,39 +236,39 @@ initial_palette:
 hello:
 
 	; Lana's tiles
-	db $6c, $01, $01, $85
-	db $6c, $01, $02, $2d
-	db $6c, $02, $02, $35
-	db $6c, $03, $00, $3d
+	db $40, $01, $01, $85
+	db $10, $01, $02, $2d
+	db $20, $02, $02, $35
+	db $30, $03, $00, $3d
 	
 	; Beanie's tiles
-	db $75, $04, $04, $25
-	db $75, $05, $01, $2d
-	db $75, $06, $00, $35
+	db $40, $04, $04, $25
+	db $50, $05, $01, $2d
+	db $60, $06, $00, $35
 
 	; Josh's tiles
-	db $7c, $07, $03, $25
-	db $7c, $08, $00, $2d
-	db $7c, $09, $00, $35
-	db $7c, $0A, $00, $3d
-	db $7c, $0B, $00, $45
-	db $7c, $0C, $01, $4d
-	db $7c, $0D, $03, $5d
-	db $7c, $0E, $03, $65
+	db $70, $07, $03, $25
+	db $80, $08, $00, $2d
+	db $90, $09, $00, $35
+	db $A0, $0A, $00, $3d
+	db $A0, $0B, $00, $45
+	db $A0, $0C, $01, $4d
+	db $A0, $0D, $03, $5d
+	db $A0, $0E, $03, $65
 
 	; Lisa's tiles
-	db $85, $0F, $03, $25
-	db $85, $10, $00, $2d
-	db $85, $11, $02, $35
-	db $85, $12, $02, $3d
-	db $85, $13, $01, $45
-	db $85, $14, $01, $4d
+	db $A8, $0F, $03, $25
+	db $A8, $10, $00, $2d
+	db $A8, $11, $02, $35
+	db $A8, $12, $02, $3d
+	db $A8, $13, $01, $45
+	db $A8, $14, $01, $4d
 
 	; Tommy's tiles
-	db $8d, $15, $01, $25
-	db $8d, $16, $01, $2d
-	db $8d, $17, $01, $35
-	db $8d, $18, $01, $3d
+	db $B0, $15, $01, $25
+	db $b0, $16, $01, $2d
+	db $b0, $17, $01, $35
+	db $b0, $18, $01, $3d
 
 	
 backgrounddata_walls:
@@ -230,9 +276,9 @@ backgrounddata_walls:
 	db $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
 
 backgrounddata_words:
-	db $09,$02,$11,$11,$1A
-	db $03,$0A,$13,$15,$09,$05,$02,$1A
-	db $15,$10,$0E,$0E,$1A,$1C,$1C,$1C
+	db $09,$02,$11,$11,$1A			; HAPPY
+	db $03,$0A,$13,$15,$09,$05,$02,$1A	; BIRTHDAY
+	db $15,$10,$0E,$0E,$1A,$1C,$1C,$1C	; TOMMY!!!
 
 
 	
