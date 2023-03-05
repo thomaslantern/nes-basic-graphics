@@ -9,20 +9,15 @@
 	db 0,0,0,0,0,0,0
 
 
-curs_x equ $40
-curs_y equ curs_x+1
-
-vblanked equ $7f
-
-
 nmihandler:
 	pha
 	php
-		inc vblanked
-	plp
-	pla
+
 	lda #$02
 	sta $4014
+
+	plp
+	pla
 
 	rti
 	
@@ -81,19 +76,16 @@ copypalloop:
 
 	lda $2002
 
-
-
-
-
-
 	
 	ldx #$02 	; Set SPR-RAM address to 0
 	stx $4014
+
+	ldx #0
 spriteload:
-	lda hello,x	; Load tiles, x and y attributes
+	lda sprites,x	; Load tiles, x and y attributes
 	sta $0200,x
 	inx
-	cpx #$60
+	cpx #$20
 	bne spriteload
 
 
@@ -146,19 +138,19 @@ bkgd:
 
 	ldx #0
 	lda $2002
-	lda #$22
+	lda #$22	; tile address is $2289
 	sta $2006
-	lda #$89
+	lda #$89	; low byte of $2289
 	sta $2006
 bkgd_floor:
-	lda #$01
+	lda #$01	; Tile $01 is a brick
 	sta $2007
 	inx
-	cpx #$0D
+	cpx #$0D	; We want 13 bricks total
 	bne bkgd_floor
 
 
-bkgd_words:
+bkgd_words:		; "Happy Birthday Tommy!" tiles
 	lda #$20
 	sta $09
 	lda #$2C
@@ -238,53 +230,33 @@ forever:
 
 
 initial_palette:
-	db $2A,$27,$0F,$1A
+	db $2A,$27,$0F,$1A  ; Background palettes
 	db $2A,$23,$33,$1A
 	db $2A,$22,$33,$1A
-	db $2A,$21,$33,$1A
-	db $0F,$0F,$27,$16  ; bomb/termy palette
-	db $0F,$31,$27,$08  ; boy palette
-	db $0F,$37,$25,$17  ; girl palette
-	db $0F,$11,$12,$13
+	db $2A,$27,$31,$1A
+	db $0F,$0F,$27,$16  ; bomb palette
+	db $0F,$27,$16,$11  ; cake palette
+	db $0F,$07,$27,$25  ; girl palette
+	db $0F,$2d,$16,$2d  ; extra palette
 
 
-hello:
+sprites:
 
-	; Lana's tiles
-	db $70, $01, $01, $75
-	db $70, $01, $02, $7d
-	db $70, $02, $02, $85
-	db $70, $03, $00, $8d
+	db $98, $01, $02, $78 ; Girl #1
+	db $98, $02, $42, $85 ; Girl #2
 	
-	; Beanie's tiles
-	db $78, $04, $04, $7d
-	db $78, $05, $01, $85
-	db $78, $06, $00, $8d
 
-	; Josh's tiles
-	db $80, $07, $03, $55
-	db $80, $08, $00, $5d
-	db $80, $09, $00, $65
-	db $80, $0A, $00, $6d
-	db $80, $0B, $00, $75
-	db $80, $0C, $01, $7d
-	db $80, $0D, $03, $85
-	db $80, $0E, $03, $8D
+	db $98, $04, $01, $80 ; Cake
 
-	; Lisa's tiles
-	db $88, $0F, $03, $65
-	db $88, $10, $00, $6d
-	db $88, $11, $02, $75
-	db $88, $12, $02, $7d
-	db $88, $13, $01, $85
-	db $88, $14, $01, $8D
 
-	; Tommy's tiles
-	db $90, $15, $01, $65
-	db $90, $16, $01, $6d
-	db $90, $17, $01, $75
-	db $90, $18, $01, $7d
+	db $30, $0B, $00, $55 ; Explosions!
+	db $28, $0B, $00, $5d
+	db $28, $0B, $00, $9d
+	db $30, $0B, $00, $a5
 
+	db $48, $11, $00, $7d ; Bomb - uh oh!
+
+; Background data
 	
 backgrounddata_walls:
 	
@@ -294,14 +266,6 @@ backgrounddata_words:
 	db $09,$02,$11,$11,$1A			; HAPPY
 	db $03,$0A,$13,$15,$09,$05,$02,$1A	; BIRTHDAY
 	db $15,$10,$0E,$0E,$1A,$1C,$1C,$1C	; TOMMY!!!
-
-
-	
-
-
-
-
-
 
 
 
@@ -322,7 +286,7 @@ background_tile_start:
 	db %00000000
 	db %00000000
 	db %00000000
-	db $00, $00, $00, $00, $00, $00, $00, $00	; bitplane 2
+	db $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF	; bitplane 2
 
 	db %11101110	; Brick tile
 	db %11101110
@@ -714,7 +678,7 @@ background_tile_end:
 
 sprite_tile_start:
 
-	db %00000000	; "CAAAAAAAAAAAAAAKE" (0)
+	db %00000000	; "Cake" (0)
 	db %00011100
 	db %00111110
 	db %00111110
@@ -723,7 +687,7 @@ sprite_tile_start:
 	db %00000000
 	db %00000000
 
-	db %00000000	; "CAAAAAAAAAAAAAAKE bitplane2"
+	db %00000000	; "bitplane2"
 	db %00000000
 	db %00111110
 	db %00111110
@@ -732,7 +696,7 @@ sprite_tile_start:
 	db %01111110
 	db %01111110
 
-	db %00000000	; "Lana Person walk" (1)
+	db %00000000	; "Person walk" (1)
 	db %00011100
 	db %00010000
 	db %00010000
@@ -741,7 +705,7 @@ sprite_tile_start:
 	db %00001100
 	db %00010010
 
-	db %00000000	; "Lana Person walk bp2" 
+	db %00000000	; "Person walk bp2" 
 	db %00000000
 	db %00001100
 	db %00001100
@@ -750,7 +714,7 @@ sprite_tile_start:
 	db %00001100
 	db %00000000
 
-	db %00000000	; "Lana Person" (2)
+	db %00000000	; "Person standing" (2)
 	db %00011100
 	db %00010000
 	db %00010000
@@ -759,16 +723,16 @@ sprite_tile_start:
 	db %00001100
 	db %00001100
 
-	db %00000000	; "Lana Person bp2"
+	db %00000000	; "Person standing bp2"
 	db %00000000
 	db %00001100
 	db %00001100
 	db %00001100
-	db %00000000
-	db %00000000
+	db %00001100
+	db %00001100
 	db %00000000
 
-	db %00000000	; "Lana bomb" (3)
+	db %00000000	; "bomb" (3)
 	db %00001000
 	db %00111110
 	db %01111111
@@ -777,7 +741,7 @@ sprite_tile_start:
 	db %00111110
 	db %00011100
 
-	db %00011000	; "Lana bomb bp2"
+	db %00011000	; "bomb bp2"
 	db %00000000
 	db %00000000
 	db %00000000
@@ -786,8 +750,8 @@ sprite_tile_start:
 	db %00000000
 	db %00000000
 
-			; BEANIE
-	db %00000000	; "CAAAAAAAAAAAAAAKE" (4)
+			
+	db %00000000	; "Cake 2" (4)
 	db %00000000
 	db %00000000
 	db %00000000	
@@ -796,7 +760,7 @@ sprite_tile_start:
 	db %01111100
 	db %01111100
 
-	db %00000000	; "CAAAAAAAAAAAAAAKE bitplane2"
+	db %00000000	; "Cake 2 bitplane2"
 	db %00000000
 	db %00000000
 	db %00000000
@@ -805,7 +769,7 @@ sprite_tile_start:
 	db %01111100
 	db %01111100
 
-	db %00000000	; "Person walk" (5)
+	db %00000000	; "Person 2 walk" (5)
 	db %00111000
 	db %00101000
 	db %00000000
@@ -814,7 +778,7 @@ sprite_tile_start:
 	db %00111000
 	db %00000000
 
-	db %00000000	; "Person walk bp2"
+	db %00000000	; "Person 2 walk bp2"
 	db %00010000
 	db %00010000
 	db %00111000
@@ -823,7 +787,7 @@ sprite_tile_start:
 	db %00000000
 	db %00101000
 
-	db %00000000	; "Beanie bomb" (6)
+	db %00000000	; "bomb 2" (6)
 	db %00001000
 	db %00111100
 	db %01111110	
@@ -833,7 +797,7 @@ sprite_tile_start:
 	db %00000000
 
 
-	db %00001000	; "bomb bp2"
+	db %00001000	; "bomb 2 bp2"
 	db %00000000
 	db %00000000
 	db %00000000
@@ -842,8 +806,8 @@ sprite_tile_start:
 	db %00000000
 	db %00000000	
 
-		; JOSH
-	db %00000000	; "CAAAAAAAAAAAAAAKE" (7)
+		
+	db %00000000	; "Cake 3" (7)
 	db %00000000
 	db %00000000
 	db %00000000	
@@ -852,7 +816,7 @@ sprite_tile_start:
 	db %00111100
 	db %01111110
 
-	db %00000000	; "CAAAAAAAAAAAAAAKE bitplane2"
+	db %00000000	; "Cake 3 bitplane2"
 	db %00000000
 	db %00000000
 	db %00011000
@@ -861,7 +825,7 @@ sprite_tile_start:
 	db %00000000
 	db %00000000
 
-	db %00111000	; "Person walk" (8)
+	db %00111000	; "Person 3 walk" (8)
 	db %00101000
 	db %00000000
 	db %00110000
@@ -870,7 +834,7 @@ sprite_tile_start:
 	db %01001000
 	db %00000000
 
-	db %00000000	; "Person walk bp2"
+	db %00000000	; "Person 3 walk bp2"
 	db %00011000
 	db %00111000
 	db %00000000
@@ -879,7 +843,7 @@ sprite_tile_start:
 	db %00000000
 	db %00000000
 
-	db %00111000	; "Person stand" (9)
+	db %00111000	; "Person 3 stand" (9)
 	db %00101000
 	db %00000000
 	db %00110000
@@ -888,7 +852,7 @@ sprite_tile_start:
 	db %00110000
 	db %00000000
 
-	db %00000000	; "Person walk bp2"
+	db %00000000	; "Person 3 stand bp2"
 	db %00011000
 	db %00111000
 	db %00000000
@@ -897,7 +861,7 @@ sprite_tile_start:
 	db %00000000
 	db %00000000
 
-	db %00000000	; "Joshie bomb" (A)
+	db %00000000	; "bomb 3" (A)
 	db %00010000
 	db %00111000
 	db %01111100	
@@ -906,7 +870,7 @@ sprite_tile_start:
 	db %00111000	
 	db %00000000
 
-	db %00110000	; "bomb bp2"
+	db %00110000	; "bomb 3 bp2"
 	db %00010000
 	db %00000000
 	db %00000000
@@ -915,7 +879,7 @@ sprite_tile_start:
 	db %00000000
 	db %00000000	
 
-	db %00000000	; "Joshie bomb explosion!" (B)
+	db %00000000	; "bomb explosion!" (B)
 	db %00000000
 	db %00000000
 	db %00000000	
@@ -934,7 +898,7 @@ sprite_tile_start:
 	db %01111100
 	db %00100110	
 
-	db %00000000	; "Joshie person 2" (C)
+	db %00000000	; "Person 4" (C)
 	db %00000000
 	db %00000000
 	db %00011000	
@@ -944,7 +908,7 @@ sprite_tile_start:
 	db %00000000
 
 
-	db %00000000	; "person2 bp2"
+	db %00000000	; "Person 4 bp2"
 	db %00011000
 	db %00011000
 	db %01111110
@@ -954,7 +918,7 @@ sprite_tile_start:
 	db %00000000	
 
 
-	db %00000000	; "Metal Terminator" (D)
+	db %00000000	; "Person 5" (D)
 	db %00000000
 	db %00000000
 	db %00000000	
@@ -973,8 +937,8 @@ sprite_tile_start:
 	db %00000000
 	db %00000000	
 
-	; LISA
-	db %00000000	; "Lisa cake 1" (E)
+
+	db %00000000	; "Cake 4" (E)
 	db %00000000
 	db %00000000
 	db %00111000	
@@ -984,7 +948,7 @@ sprite_tile_start:
 	db %01111100
 
 
-	db %00000000	; "cake1 bp2"
+	db %00000000	; "cake 4 bp2"
 	db %00000000
 	db %00000000
 	db %00111000
@@ -993,7 +957,7 @@ sprite_tile_start:
 	db %00111000
 	db %00000000	
 
-	db %00000000	; "Lisa cake 2" (E)
+	db %00000000	; "Cake 5" (E)
 	db %00000000
 	db %00000000
 	db %00111100	
@@ -1003,7 +967,7 @@ sprite_tile_start:
 	db %01111110
 
 
-	db %00000000	; "cake2 bp2"
+	db %00000000	; "Cake 5 bp2"
 	db %00000000
 	db %00000000
 	db %00000000
@@ -1012,7 +976,7 @@ sprite_tile_start:
 	db %00111100
 	db %00000000	
 
-	db %00000000	; "Lisa cake 3" (F)
+	db %00000000	; "Cake 6" (F)
 	db %00000000
 	db %00000000
 	db %00011000	
@@ -1022,7 +986,7 @@ sprite_tile_start:
 	db %01111110
 
 
-	db %00000000	; "cake3 bp2"
+	db %00000000	; "Cake 6 bp2"
 	db %00000000
 	db %00000000
 	db %00000000
@@ -1032,7 +996,7 @@ sprite_tile_start:
 	db %00000000	
 
 	db %00001100
-	db %00001000	; "bomb" (10)
+	db %00001000	; "Bomb 4" (10)
 	db %00011000
 	db %00111100
 	db %01111110
@@ -1051,7 +1015,7 @@ sprite_tile_start:
 	db %00000000		
 	
 	db %00011000
-	db %00100100	; "girl" (11)
+	db %00100100	; "Girl" (11)
 	db %00100100
 	db %00111100
 	db %00111100
@@ -1070,7 +1034,7 @@ sprite_tile_start:
 	db %00100100
 
 	db %00110000
-	db %01100000	; "sideview girl" (12)
+	db %01100000	; "Sideview girl" (12)
 	db %01100000
 	db %01110000
 	db %01110000
@@ -1089,7 +1053,7 @@ sprite_tile_start:
 	db %01001000
 
 	db %00011000
-	db %00010000	; "boy" (13)
+	db %00010000	; "Boy" (13)
 	db %00010000
 	db %00011100
 	db %00011000
@@ -1108,7 +1072,7 @@ sprite_tile_start:
 	db %01001100
 
 	db %00011000
-	db %00000000	; "boy standing" (14)
+	db %00000000	; "Boy standing" (14)
 	db %00000000
 	db %00111100
 	db %00011000
@@ -1127,9 +1091,8 @@ sprite_tile_start:
 	db %00111100
 
 
-	; TOMMY
 	db %01110000
-	db %01010000	; "boy walking" (15)
+	db %01010000	; "Boy 2 walking" (15)
 	db %01000000
 	db %00000000
 	db %00110000
@@ -1148,7 +1111,7 @@ sprite_tile_start:
 	db %00000000
 
 	db %01110000
-	db %01010000	; "boy standing" (16)
+	db %01010000	; "Boy 2 standing" (16)
 	db %01000000
 	db %00000000
 	db %00110000
