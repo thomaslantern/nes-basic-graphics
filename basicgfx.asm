@@ -32,12 +32,12 @@ irqhandler:
 	rti
 
 startgame:
-	sei				; Disable interrupts
-	cld				; Clear decimal mode
+	sei			; Disable interrupts
+	cld			; Clear decimal mode
 
 	ldx #$ff	
-	txs				; Set-up stack
-	inx				; x is now 0
+	txs			; Set-up stack
+	inx			; x is now 0
 	stx $2000		; Disable/reset graphic options 
 	stx $2001		; Make sure screen is off
 	stx $4015		; Disable sound
@@ -48,9 +48,9 @@ startgame:
 	lda #0	
 waitvblank:
 	bit $2002		; check PPU Status to see if
-	bpl waitvblank	; vblank has occurred.
+	bpl waitvblank		; vblank has occurred.
 	lda #0
-clearmemory:		; Clear all memory info
+clearmemory:			; Clear all memory info
 	sta $0000,x
 	sta $0100,x
 	sta $0300,x
@@ -61,14 +61,14 @@ clearmemory:		; Clear all memory info
 	lda #$FF
 	sta $0200,x		; Load $FF into $0200 to 
 	lda #$00		; hide sprites 
-	inx				; x goes to 1, 2... 255
+	inx			; x goes to 1, 2... 255
 	cpx #$00		; Loop ends after 256 times,
-	bne clearmemory ; clearing all memory
-
+	bne clearmemory		; clearing all memory
+	
 
 waitvblank2:
 	bit $2002		; Check PPU Status one more time
-	bpl waitvblank2	; before we start loading in graphics	
+	bpl waitvblank2		; before we start loading in graphics	
 	lda $2002
 	ldx #$3F
 	stx $2006
@@ -89,8 +89,8 @@ copypalloop:
 	; Loop to load in sprite tile info
 	ldx #0 			; Set loop counter to 0
 spriteload:
-	lda sprites,x	; Loads one of four values into $0200,x:
-	sta $0200,x 	; x-value, tile #, flip options, y-value
+	lda sprites,x		; Loads one of four values into $0200,x:
+	sta $0200,x 		; x-value, tile #, flip options, y-value
 	inx
 	cpx #$20 		; Loop 32 times (8 tiles with 4 attributes each)
 	bne spriteload
@@ -121,7 +121,7 @@ bkgd:
 
 	lda $2002	; Reset high-low address latch for $2006
 	iny 		; Increment outer loop (starts at 0)
-	clc			; Clear carry for addition
+	clc		; Clear carry for addition
 	lda $08		; Load low byte value for nametable
 	adc #32 	; Add 32 to move down one row of tiles
 	sta $08		; Store new value here for loop
@@ -182,7 +182,9 @@ happy:			; "Happy"
 	sta $2006
 	lda $08
 	sta $2006
+
 birthday:		; "Birthday"
+	
 	; Do not reset x, keep working down
 	; list of birthday tiles 
 
@@ -202,8 +204,8 @@ birthday:		; "Birthday"
 	lda $08
 	sta $2006
 
-
 tommy:			; "Tommy!!!"
+	
 	; Continue working through list
 	; of birthday tiles
 	
@@ -270,7 +272,7 @@ backgrounddata_walls:
 	db $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
 
 backgrounddata_words:
-	db $09,$02,$11,$11,$1A				; HAPPY
+	db $09,$02,$11,$11,$1A			; HAPPY
 	db $03,$0A,$13,$15,$09,$05,$02,$1A	; BIRTHDAY
 	db $15,$10,$0E,$0E,$1A,$1C,$1C,$1C	; TOMMY!!!
 
@@ -1185,6 +1187,6 @@ sprite_tile_end
 	
 chr_rom_end:
 
-; Pad chr-rom to 8k (to make valid file)
+	; Pad chr-rom to 8k (to make valid file)
 	ds 8192-(chr_rom_end-chr_rom_start)
 
