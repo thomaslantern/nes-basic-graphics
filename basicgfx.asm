@@ -1,3 +1,9 @@
+	; Basic Graphics Program
+	; by Thomas Wesley Scott, 2023
+
+	; Code starts at $C000.
+	; org jump to $BFFO for header info
+
 
 	org $BFF0
 	db "NES",$1a
@@ -26,21 +32,22 @@ irqhandler:
 	rti
 
 startgame:
-	sei		; Disable interrupts
-	cld		; Clear decimal mode
+	sei				; Disable interrupts
+	cld				; Clear decimal mode
 
 	ldx #$ff	
-	txs		; Set-up stack
-	inx		; x is now 0
-	stx $2000	; Disable/reset graphic options 
-	stx $2001	; Make sure screen is off
-	stx $4015	; Disable sound
-	stx $4010	; Disable DMC (sound samples)
+	txs				; Set-up stack
+	inx				; x is now 0
+	stx $2000		; Disable/reset graphic options 
+	stx $2001		; Make sure screen is off
+	stx $4015		; Disable sound
+
+	stx $4010		; Disable DMC (sound samples)
 	lda #$40
-	sta $4017	; Disable sound IRQ
+	sta $4017		; Disable sound IRQ
 	lda #0	
 waitvblank:
-	bit $2002	; check PPU Status to see if
+	bit $2002		; check PPU Status to see if
 	bpl waitvblank	; vblank has occurred.
 	lda #0
 clearmemory:		; Clear all memory info
@@ -52,15 +59,15 @@ clearmemory:		; Clear all memory info
 	sta $0600,x
 	sta $0700,x
 	lda #$FF
-	sta $0200,x	; Load $FF into $0200 to 
-	lda #$00	; hide sprites 
-	inx		; x goes to 1, 2... 255
-	cpx #$00	; loop ends after 256 times,
+	sta $0200,x		; Load $FF into $0200 to 
+	lda #$00		; hide sprites 
+	inx				; x goes to 1, 2... 255
+	cpx #$00		; Loop ends after 256 times,
 	bne clearmemory ; clearing all memory
 
 
 waitvblank2:
-	bit $2002	; Check PPU Status one more time
+	bit $2002		; Check PPU Status one more time
 	bpl waitvblank2	; before we start loading in graphics	
 	lda $2002
 	ldx #$3F
@@ -74,73 +81,68 @@ copypalloop:
 	cpx #$20
 	bcc copypalloop
 
-	lda $2002
+		
+	ldx #$02 		; Store sprite info 
+	sta $4014		; into OAM DMA
 
-	
-	ldx #$02 	; Set SPR-RAM address to 0
-	stx $4014
 
-	ldx #0
+	; Loop to load in sprite tile info
+	ldx #0 			; Set loop counter to 0
 spriteload:
-	lda sprites,x	; Load tiles, x and y attributes
-	sta $0200,x
+	lda sprites,x	; Loads one of four values into $0200,x:
+	sta $0200,x 	; x-value, tile #, flip options, y-value
 	inx
-	cpx #$20
+	cpx #$20 		; Loop 32 times (8 tiles with 4 attributes each)
 	bne spriteload
 
 
 ; Setup background
 
 
-
-	ldy #$FF
-	lda $2002
-	lda #$20
+	ldy #$FF 	; Setup outer loop counter
+	lda $2002	; Reset address high-low latch for $2006
+	lda #$20 	; Load high byte of $2009
+	sta $2006	
+	sta $09		; Zero page - storing high byte here
+	lda #$09 	; Load low byte of $2009
 	sta $2006
-	sta $09		; zero page - storing high byte here
-	lda #$09
-	sta $2006
-	sta $08		; zero page - storing low byte here
+	sta $08		; Zero page - storing low byte here
 
 bkgdouter:
-
-
-	
-	
-	ldx #0
+	ldx #0 		; Setup inner loop counter
 bkgd:
 	; 14 tiles, place them 20 times
 
 	lda backgrounddata_walls,x
 	sta $2007
 	inx
-	cpx #$0E
+	cpx #$0E 	; Loop 14 times
 	bne bkgd
 
-	lda $2002
-	iny
-	clc
-	lda $08
-	adc #32
-	sta $08	
-	lda $09
-	adc #0	; if carry is set, should add to $09
-	sta $09	
+	lda $2002	; Reset high-low address latch for $2006
+	iny 		; Increment outer loop (starts at 0)
+	clc			; Clear carry for addition
+	lda $08		; Load low byte value for nametable
+	adc #32 	; Add 32 to move down one row of tiles
+	sta $08		; Store new value here for loop
+	lda $09 	; Low high byte value for nametable
+	adc #0	 	; if carry is set, should add 1 to $09
+	sta $09		; Store new value here for loop
 
 	sta $2006
 	lda $08
-	sta $2006
+	sta $2006	; Next address for tile placement now loaded
 
-	cpy #$14
+	cpy #$14 	; Loop 20 times
 	bne bkgdouter
 
 ; Load the floor of the house.
 
 	ldx #0
 	lda $2002
-	lda #$22	; tile address is $2289
+	lda #$22	; Tile address is $2289
 	sta $2006
-	lda #$89	; low byte of $2289
+	lda #$89	; Low byte of $2289
 	sta $2006
 bkgd_floor:
 	lda #$01	; Tile $01 is a brick
@@ -151,9 +153,9 @@ bkgd_floor:
 
 
 bkgd_words:		; "Happy Birthday Tommy!" tiles
-	lda #$20
+	lda #$20 	; Tile address is $202C
 	sta $09
-	lda #$2C
+	lda #$2C    ; Low byte of $202C
 	sta $08
 
 	lda $2002
@@ -163,7 +165,7 @@ bkgd_words:		; "Happy Birthday Tommy!" tiles
 	sta $2006
 
 	ldx #0
-happy:
+happy:			; "Happy"
 	
 	lda backgrounddata_words,x
 	sta $2007
@@ -173,16 +175,17 @@ happy:
 
 	clc
 	lda $08
-	adc #32
+	adc #32 	; Add 32 to move down one row
 	sta $08
 	lda $2002
 	lda $09
 	sta $2006
 	lda $08
 	sta $2006
-birthday:
-	; do not reset x, keep going
-	
+birthday:		; "Birthday"
+	; Do not reset x, keep working down
+	; list of birthday tiles 
+
 	lda backgrounddata_words,x
 	sta $2007
 	inx
@@ -200,8 +203,9 @@ birthday:
 	sta $2006
 
 
-tommy:
-	; do not reset x, keep going
+tommy:			; "Tommy!!!"
+	; Continue working through list
+	; of birthday tiles
 	
 	lda backgrounddata_words,x
 	sta $2007
@@ -209,19 +213,20 @@ tommy:
 	cpx #$15
 	bne tommy
 
-
+	; Reset scroll values so background
+	; does not automatically scroll
 	lda $2002
 	lda #$00
 	sta $2005
 	sta $2005
 	
-
+	; Turn on monitor, turn on NMI
+	; (screen refresh), turn on
+	; sprites and background
 	lda #%00011110
 	sta $2001
 	lda #$88
 	sta $2000
-
-
 
 
 forever:
@@ -230,10 +235,14 @@ forever:
 
 
 initial_palette:
-	db $2A,$27,$0F,$1A  ; Background palettes
+	
+	; Background palettes
+	db $2A,$27,$0F,$1A  
 	db $2A,$23,$33,$1A
 	db $2A,$22,$33,$1A
 	db $2A,$27,$31,$1A
+
+	; Sprite palettes						
 	db $0F,$0F,$27,$16  ; bomb palette
 	db $0F,$27,$16,$11  ; cake palette
 	db $0F,$07,$27,$25  ; girl palette
@@ -244,10 +253,8 @@ sprites:
 
 	db $98, $01, $02, $78 ; Girl #1
 	db $98, $02, $42, $85 ; Girl #2
-	
 
 	db $98, $04, $01, $80 ; Cake
-
 
 	db $30, $0B, $00, $55 ; Explosions!
 	db $28, $0B, $00, $5d
@@ -263,10 +270,9 @@ backgrounddata_walls:
 	db $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
 
 backgrounddata_words:
-	db $09,$02,$11,$11,$1A			; HAPPY
+	db $09,$02,$11,$11,$1A				; HAPPY
 	db $03,$0A,$13,$15,$09,$05,$02,$1A	; BIRTHDAY
 	db $15,$10,$0E,$0E,$1A,$1C,$1C,$1C	; TOMMY!!!
-
 
 
 	org $FFFA
@@ -278,7 +284,7 @@ chr_rom_start:
 
 background_tile_start:
 
-	db %00000000	; Blank tile - do I need this?
+	db %00000000	; "Blank" tile
 	db %00000000
 	db %00000000
 	db %00000000
@@ -672,11 +678,17 @@ background_tile_start:
 	db %00000010
 	db $00, $00, $00, $00, $00, $00, $00, $00
 
+
+	; This code here guarantees that your
+	; background tiles total 4k 
+	; (16 bytes x 256 tiles)
 background_tile_end:
 	ds 4096-(background_tile_end-background_tile_start)
 
 
 sprite_tile_start:
+
+	; (Numbers in brackets denote tile #s)
 
 	db %00000000	; "Cake" (0)
 	db %00011100
@@ -1173,6 +1185,6 @@ sprite_tile_end
 	
 chr_rom_end:
 
-; Pad chr-rom to 8k(to make valid file)
+; Pad chr-rom to 8k (to make valid file)
 	ds 8192-(chr_rom_end-chr_rom_start)
 
