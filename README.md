@@ -17,4 +17,12 @@ Assuming you've successfully followed the steps to compile above, you should now
 <h1>How to Use (and Learn From) "basicgfx.asm"</h1>
 While it's maybe not the most exciting program (whoever heard of a game that's just a static screen?), there's lots to be learned from this program! In particular, aside from learning how to put graphics on the screen of an NES game, you can modify the tiles yourself and make your own graphics! The "0"s and "1"s you see at the end of the code (in the "chr_rom_start" section near the end) are all the tiles - try changing some of the zeroes and ones around and see what happens!
 
+Let's learn a little about how the NES actually uses graphics. First we'll start by learning about a few important memory addresses that we use for all of our graphics programming:
+<ul>
+  <li>$2002: This is PPU Status address. You want to load this (e.g. LDA $2002) every time you're about to load in some new addresses for graphics (using LDA on this address resets the address "latch" so you can set it for wherever you're placing graphics - this will make more sense in a moment)</li>
+  <li>$2006: This is where we assign an address to put some data. It's a 16-bit address, so we have to load it in one byte at a time, starting with the high byte (this is called "big-endian" - most parts of NES programming require "little endian" or loading in the lower byte first!)</li>
+  <li>$2007: This is the address where we actually load in data, which will then go wherever the address we loaded in $2006 tells it to go</li>
+  <li>$2005: Yes, I know I didn't put these in numerical order. This is what we use at the end of, say, loading in background tiles, because this is for the background scroll. If you don't load 0 into this (twice, once for X, once for Y) after loading in graphics, your screen may scroll (this is due to $2005 sharing a register with $2006)</li>
+</ul>
+
 <h2>More to come!</h2>
