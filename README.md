@@ -25,4 +25,25 @@ Let's learn a little about how the NES actually uses graphics. First we'll start
   <li>$2005: Yes, I know I didn't put these in numerical order. This is what we use at the end of, say, loading in background tiles, because this is for the background scroll. If you don't load 0 into this (twice, once for X, once for Y) after loading in graphics, your screen may scroll (this is due to $2005 sharing a register with $2006)</li>
 </ul>
 
+<p> A typical graphics setup routine might look something like this: 
+<pre><code>
+  lda $2002    ; Reset address latch
+  lda $20      ; Load high byte of background address
+  sta $2006    ; Store $20 as high byte
+  lda $09      ; Load low byte of background address
+  sta $2006    ; Store $09 as low byte (so we're doing graphics at $2009
+  ldx #0       ; load 0 into x (our loop counter)
+loop:
+  lda bkgd_table,x      ; Load the xth byte from our bkgd_table
+  sta $2007             ; Storing this byte in $2007 puts that data at the tile on the screen associated with $2009
+  inx                   ; Increase our counter 1
+  cpx #20               ; In this example we're putting 20 tiles down, so if x == 20, we' re going to stop
+  bne loop              ; If branch is not equal to zero (ie. x isn't 20), then branch to loop, i.e. keep looping
+</code>
+</pre>
+
+A little bit confusing but basically, _cpx #20_ and _bne loop_ combined means something like, "Subtract 20 from x, if the result is zero, exit the loop, otherwise keep looping."
+
+ 
+</ul></p>
 <h2>More to come!</h2>
