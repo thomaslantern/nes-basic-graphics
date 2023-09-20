@@ -24,8 +24,8 @@ Let's learn a little about how the NES actually uses graphics. First we'll start
   <li>$2007: This is the address where we actually load in data, which will then go wherever the address we loaded in $2006 tells it to go</li>
   <li>$2005: Yes, I know I didn't put these in numerical order. This is what we use at the end of, say, loading in background tiles, because this is for the background scroll. If you don't load 0 into this (twice, once for X, once for Y) after loading in graphics, your screen may scroll (this is due to $2005 sharing a register with $2006)</li>
 </ul>
-
-<p> A typical graphics setup routine might look something like this: 
+<h2>Background Graphics Sample Template</h2>
+<p> To set up your background graphics, you might do something like this:
 <pre><code>
   lda $2002    ; Reset address latch
   lda $20      ; Load high byte of background address
