@@ -20,7 +20,7 @@ Let's learn a little about how the NES actually uses graphics. First we'll start
   <li><strong>$2002</strong>: This is PPU Status address. You want to load this (e.g. LDA $2002) every time you're about to load in some new addresses for graphics (using LDA on this address resets the address "latch" so you can set it for wherever you're placing graphics - this will make more sense in a moment)</li>
   <li><strong>$2006</strong>: This is where we assign an address to put some data. It's a 16-bit address, so we have to load it in one byte at a time, starting with the high byte (this is called "big-endian" - most parts of NES programming require "little endian" or loading in the lower byte first!)</li>
   <li><strong>$2007</strong>: This is the address where we actually load in data, which will then go wherever the address we loaded in $2006 tells it to go</li>
-  <li><strong>$2007</strong>: Yes, I know I didn't put these in numerical order. This is what we use at the end of, say, loading in background tiles, because this is for the background scroll. If you don't load 0 into this (twice, once for X, once for Y) after loading in graphics, your screen may scroll (this is due to $2005 sharing a register with $2006)</li>
+  <li><strong>$2005</strong>: Yes, I know I didn't put these in numerical order. This is what we use at the end of, say, loading in background tiles, because this is for the background scroll. If you don't load 0 into this (twice, once for X, once for Y) after loading in graphics, your screen may scroll (this is due to $2005 sharing a register with $2006)</li>
 </ul>
 <h2>Background Graphics Sample Template</h2>
 <p> To set up your background graphics, you might do something like this:
