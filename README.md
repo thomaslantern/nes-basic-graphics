@@ -1,8 +1,6 @@
 # nes-basic-graphics
 Basic graphics for NES using VASM compiler
 
-<h1>still UNDER CONSTRUCTION</h1>
-
 This is a pretty basic program for making graphics on the NES (Nintendo Entertainment System). It is a simple, static screen, which contains both background tiles and "foreground tiles" AKA sprites.
 <h2>Note:</h2>
 This program/tutorial is a continuation of my "Hello World" NES program, which I strongly recommend you check out first (especially if you have any trouble with this program). The link is here:
