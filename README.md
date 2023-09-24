@@ -15,7 +15,7 @@ where DIR and DIR2 are the paths/directories for the source file and target file
 Assuming you've successfully followed the steps to compile above, you should now have an .nes file, "basicgfx.nes". This file can be run in any NES (Nintendo Entertainment System) emulator. I tend to use Nestopia, but other NES developers really seem to enjoy FCEUX, so use whichever emulator you like to run it!
 
 <h1>How to Use (and Learn From) "basicgfx.asm"</h1>
-While it's maybe not the most exciting program (whoever heard of a game that's just a static screen?), there's lots to be learned from this program! In particular, aside from learning how to put graphics on the screen of an NES game, you can modify the tiles yourself and make your own graphics! The "0"s and "1"s you see at the end of the code (in the "chr_rom_start" section near the end) are all the tiles - try changing some of the zeroes and ones around and see what happens!
+While it's not the most exciting program (whoever heard of a game that's just a static screen?), there's lots to be learned from this program! In particular, aside from learning how to put graphics on the screen of an NES game, you can modify the tiles yourself and make your own graphics! The "0"s and "1"s you see at the end of the code (in the "chr_rom_start" section near the end) are all the tiles - try changing some of the zeroes and ones around and see what happens!
 <h2>Learn More About Graphics on the NES</h2>
 Let's learn a little about how the NES actually uses graphics. First we'll start by learning about a few important memory addresses that we use for all of our graphics programming:
 <ul>
