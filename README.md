@@ -43,7 +43,9 @@ loop:
 </pre>
 
 A little bit confusing but basically, _cpx #20_ and _bne loop_ combined means something like, "Subtract 20 from x, if the result is zero, exit the loop, otherwise keep looping."
-
- 
 </ul></p>
+
+<h2>Basic Idea of How Graphics Work on the NES</h2>
+Generally speaking, a lot of what we do with graphics involves _look up tables_, which I tend to place after my game loop, but before my footer and tile code. This is not a hard and fast rule, but for most games, you probably need some tables to set up your background, initial sprite positions, etc.
+
 <h2>More to come!</h2>
