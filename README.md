@@ -35,10 +35,10 @@ Let's learn a little about how the NES actually uses graphics. First we'll start
   ldx #0       ; load 0 into x (our loop counter)
 loop:
   lda bkgd_table,x      ; Load the xth byte from our bkgd_table
-  sta $2007             ; Storing this byte in $2007 puts that data at the tile on the screen associated with $2009
+  sta $2007             ; Store this byte in $2007 to put data at tile address $2009
   inx                   ; Increase our counter 1
-  cpx #20               ; In this example we're putting 20 tiles down, so if x == 20, we' re going to stop
-  bne loop              ; If branch is not equal to zero (ie. x isn't 20), then branch to loop, i.e. keep looping
+  cpx #20               ; We're putting 20 tiles down, so stop at x == 20
+  bne loop              ; Keep looping if branch is not equal to zero (ie. x isn't 20)
 </code>
 </pre>
 
