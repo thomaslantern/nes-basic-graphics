@@ -69,6 +69,6 @@ A little bit confusing but basically, _cpx #20_ and _bne loop_ combined means so
 </ul></p>
 
 <h2>Look Up Tables (LATs) and Graphics</h2>
-Generally speaking, a lot of what we do with graphics involves look up tables, which I tend to place after my game loop, but before my footer and tile code. This is not a hard and fast rule, but for most games, you probably need some tables to set up your background, initial sprite positions, etc. You create a loop to place your data on the screen (similar to the one above), and repeat the process, creating as many loops as you need until your screen is appropriately populated with the graphics you want. Awesome!
+Generally speaking, a lot of what we do with graphics involves look up tables, which I tend to place after my game loop, but before my footer and tile code. Look up tables allow you to efficiently set up your background and initial sprite positions, as well as allowing you to store values that might be too costly to calculate (sine values, etc). In the case of graphics, their use is fairly straightforward: you create a loop to place your data on the screen (similar to the one above), and repeat the process, creating as many loops as you need until your screen is appropriately populated with the graphics you want. Awesome!
 
 <h2>More to come!</h2>
