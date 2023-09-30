@@ -3,7 +3,7 @@ Basic graphics for NES using VASM compiler
 
 This is a pretty basic program for making graphics on the NES (Nintendo Entertainment System). It is a simple, static screen, which contains both background tiles and "foreground tiles" AKA sprites.
 <h2>Note:</h2>
-This program/tutorial is a continuation of my "Hello World" NES program, which I strongly recommend you check out first (especially if you have any trouble with this program). The link is here:
+This program/tutorial is a continuation of my "Hello World" NES program, which I <em>strongly</em> recommend you check out first (especially if you have any trouble with this program). The link is here:
 https://github.com/thomaslantern/nes-hello-world
 
 <h1> How to Compile "basicgfx.asm" </h1>
@@ -69,6 +69,6 @@ A little bit confusing but basically, _cpx #20_ and _bne loop_ combined means so
 </ul></p>
 
 <h2>Look Up Tables (LATs) and Graphics</h2>
-Generally speaking, a lot of what we do with graphics involves look up tables, which I tend to place after my game loop, but before my footer and tile code. Look up tables allow you to efficiently set up your background and initial sprite positions, as well as allowing you to store values that might be too costly to calculate (sine values, etc). In the case of graphics, their use is fairly straightforward: you create a loop to place your data on the screen (similar to the one above), and repeat the process, creating as many loops as you need until your screen is appropriately populated with the graphics you want. Awesome!
+Generally speaking, a lot of what we do with graphics involves <em>look up tables</em>, which I tend to place after my game loop, but before my footer and tile code. Look up tables allow you to efficiently set up your background and initial sprite positions, as well as allowing you to store values that might be too costly to calculate (sine values, etc). In the case of graphics, their use is fairly straightforward: you create a loop to place your data on the screen (similar to the one above), and repeat the process, creating as many loops as you need until your screen is appropriately populated with the graphics you want. Awesome!
 
 <h2>More to come!</h2>
