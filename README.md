@@ -71,4 +71,11 @@ A little bit confusing but basically, _cpx #20_ and _bne loop_ combined means so
 <h2>Look Up Tables (LATs) and Graphics</h2>
 Generally speaking, a lot of what we do with graphics involves <em>look up tables</em>, which I tend to place after my game loop, but before my footer and tile code. Look up tables allow you to efficiently set up your background and initial sprite positions, as well as allowing you to store values that might be too costly to calculate (sine values, etc). In the case of graphics, their use is fairly straightforward: you create a loop to place your data on the screen (similar to the one above), and repeat the process, creating as many loops as you need until your screen is appropriately populated with the graphics you want. Awesome!
 
-<h2>More to come!</h2>
+<h2>What now?</h2>
+I have other "tutorials" on NES programming on my github:
+<ul>
+  <li>https://github.com/thomaslantern/nes-hello-world</li>
+  <li>https://github.com/thomaslantern/nes-basic-sound</li>
+  <li>https://github.com/thomaslantern/nes-basic-controls</li>
+  <li>https://github.com/thomaslantern/nes-birthday-blast</li>
+</ul>
